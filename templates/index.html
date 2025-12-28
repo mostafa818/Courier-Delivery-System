@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuickDeliver - Online Ordering System</title>
+    <!-- Link to our CSS file for styling -->
+    <link rel="stylesheet" href="../static/style.css">
+    <!-- Google Fonts for nice typography -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=DM+Sans:wght@400;500;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <!-- ==================== LOGIN/SIGNUP PAGE ==================== -->
+    <!-- This is the FIRST page users see. They must login or signup here -->
+    <!-- IMPORTANT: Signup creates CUSTOMER accounts only. Admin creates other roles. -->
+    <section id="loginPage" class="login-page">
+        <div class="login-container">
+            <!-- Logo and welcome message -->
+            <div class="login-header">
+                <span class="login-logo">🚀</span>
+                <h1>QuickDeliver</h1>
+                <p>Online Ordering System - Egypt</p>
+            </div>
+
+            <!-- Tab buttons to switch between Login and Signup -->
+            <div class="auth-tabs">
+                <button class="auth-tab active" onclick="showAuthTab('login')">Login</button>
+                <button class="auth-tab" onclick="showAuthTab('signup')">Sign Up</button>
+            </div>
+
+            <!-- LOGIN FORM -->
+            <!-- User enters email + password, system checks role and redirects -->
+            <form id="loginForm" class="auth-form" onsubmit="handleLogin(event)">
+                <h2>Login to Your Account</h2>
+
+                <div class="form-group">
+                    <label for="loginEmail">Email:</label>
+                    <input type="email" id="loginEmail" required placeholder="example@email.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="loginPassword">Password:</label>
+                    <input type="password" id="loginPassword" required placeholder="Enter your password">
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block">Login</button>
+
+                <p class="auth-hint">Don't have an account? <a href="#" onclick="showAuthTab('signup')">Sign Up</a></p>
+            </form>
+
+            <!-- SIGNUP FORM -->
+            <!-- IMPORTANT: No role selection! All signups become CUSTOMERS automatically -->
+            <form id="signupForm" class="auth-form hidden" onsubmit="handleSignup(event)">
+                <h2>Create New Account</h2>
+                <p class="signup-note">📝 New accounts are registered as Customers</p>
+
+                <div class="form-group">
+                    <label for="signupName">Full Name:</label>
+                    <input type="text" id="signupName" required placeholder="e.g. Ahmed Hassan">
+                </div>
+
+                <div class="form-group">
+                    <label for="signupEmail">Email:</label>
+                    <input type="email" id="signupEmail" required placeholder="example@email.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="signupPassword">Password:</label>
+                    <input type="password" id="signupPassword" required placeholder="Choose a password">
+                </div>
+
+                <!-- NO ROLE SELECTION - All signups are customers -->
+
+                <button type="submit" class="btn btn-primary btn-block">Create Account</button>
+
+                <p class="auth-hint">Already have an account? <a href="#" onclick="showAuthTab('login')">Login</a></p>
+            </form>
+        </div>
+    </section>
+
+    <!-- ==================== MAIN APP (Hidden until login) ==================== -->
+    <div id="mainApp" class="hidden">
+
+        <!-- ==================== HEADER SECTION ==================== -->
+        <header class="header">
+            <div class="header-content">
+                <!-- Logo and brand name -->
+                <div class="logo">
+                    <span class="logo-icon">🚀</span>
+                    <h1>QuickDeliver</h1>
+                </div>
+
+                <!-- User info and logout -->
+                <div class="user-info">
+                    <span id="welcomeUser">Welcome, Ahmed</span>
+                    <span id="userRoleBadge" class="role-badge">Customer</span>
+                    <button onclick="logout()" class="btn btn-secondary btn-sm">Logout</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- ==================== MAIN CONTENT ==================== -->
+        <main class="main-content">
+
+            <!-- ========== CUSTOMER SECTION ========== -->
+            <!-- Customers can view approved products, add to cart, checkout -->
+            <section id="customerSection" class="role-section hidden">
+                <h2 class="section-title">🛒 Shop Products</h2>
+
+                <!-- Products by Category -->
+                <div class="products-container">
+                    <h3>Available Products</h3>
+
+                    <!-- Category Filter Buttons -->
+                    <div class="category-filter">
+                        <button class="category-btn active" onclick="filterByCategory('all')">All</button>
+                        <button class="category-btn" onclick="filterByCategory('Pizza')">🍕 Pizza</button>
+                        <button class="category-btn" onclick="filterByCategory('Burgers')">🍔 Burgers</button>
+                        <button class="category-btn" onclick="filterByCategory('Drinks')">🥤 Drinks</button>
+                        <button class="category-btn" onclick="filterByCategory('Desserts')">🍰 Desserts</button>
+                    </div>
+
+                    <div id="productsList" class="products-grid">
+                        <!-- Products will be loaded here by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Shopping Cart -->
+                <div class="cart-container">
+                    <h3>🛍️ Your Cart</h3>
+                    <div id="cartItems" class="cart-items">
+                        <p class="empty-cart">Your cart is empty</p>
+                    </div>
+                    <div class="cart-footer">
+                        <div class="cart-total">
+                            <span>Total:</span>
+                            <span id="cartTotal">0 EGP</span>
+                        </div>
+                        <button onclick="showCheckout()" class="btn btn-primary">Checkout</button>
+                    </div>
+                </div>
+
+                <!-- Customer Orders -->
+                <div class="orders-container">
+                    <h3>📦 My Orders</h3>
+                    <div id="customerOrders" class="orders-list">
+                        <p class="no-orders">No orders yet</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========== CHECKOUT MODAL ========== -->
+            <!-- Payment simulation: Pay on Delivery or Credit Card -->
+            <div id="checkoutModal" class="modal hidden">
+                <div class="modal-content">
+                    <span class="modal-close" onclick="closeCheckout()">&times;</span>
+                    <h2>💳 Checkout</h2>
+
+                    <!-- Order Summary -->
+                    <div class="checkout-summary">
+                        <h4>Order Summary</h4>
+                        <div id="checkoutItems"></div>
+                        <div class="checkout-total">
+                            <strong>Total: <span id="checkoutTotal">0 EGP</span></strong>
+                        </div>
+                    </div>
+
+                    <!-- Payment Method Selection -->
+                    <div class="payment-methods">
+                        <h4>Choose Payment Method:</h4>
+                        <div class="payment-options">
+                            <label class="payment-option">
+                                <input type="radio" name="paymentMethod" value="cash" checked
+                                    onchange="togglePaymentForm()">
+                                <span class="payment-label">🚚 Pay on Delivery</span>
+                            </label>
+                            <label class="payment-option">
+                                <input type="radio" name="paymentMethod" value="card" onchange="togglePaymentForm()">
+                                <span class="payment-label">💳 Credit Card</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Credit Card Form (Hidden by default) - Simple fake form -->
+                    <div id="creditCardForm" class="credit-card-form hidden">
+                        <h4>Card Details</h4>
+                        <div class="form-group">
+                            <label>Card Number:</label>
+                            <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Expiry Date:</label>
+                                <input type="text" id="cardExpiry" placeholder="MM/YY" maxlength="5">
+                            </div>
+                            <div class="form-group">
+                                <label>CVV:</label>
+                                <input type="text" id="cardCvv" placeholder="123" maxlength="3">
+                            </div>
+                        </div>
+                    </div>
+
+                    <button onclick="processPayment()" class="btn btn-primary btn-block">Confirm Order</button>
+                </div>
+            </div>
+
+            <!-- ========== PAYMENT SUCCESS MODAL ========== -->
+            <div id="paymentSuccessModal" class="modal hidden">
+                <div class="modal-content success-modal">
+                    <div id="paymentSuccessIcon" class="success-icon">✅</div>
+                    <h2 id="paymentSuccessTitle">Payment Successful!</h2>
+                    <p id="paymentSuccessMessage">Thank you! Your order will be delivered soon.</p>
+                    <button onclick="closePaymentSuccess()" class="btn btn-primary">OK</button>
+                </div>
+            </div>
+
+            <!-- ========== ADMIN SECTION ========== -->
+            <!-- Admin has FULL CONTROL: manage products, approve products, create/edit user accounts -->
+            <section id="adminSection" class="role-section hidden">
+                <h2 class="section-title">⚙️ Admin Dashboard</h2>
+
+                <div class="admin-panel">
+
+                    <!-- ===== CREATE NEW ACCOUNT (Admin Only) ===== -->
+                    <!-- Admin can create accounts for: Admin, Courier, Service Offeror -->
+                    <div class="form-container">
+                        <h3>👤 Create New Account</h3>
+                        <p class="form-note">Create accounts for Admin, Courier, or Service Offeror</p>
+                        <form id="createAccountForm" onsubmit="createAccount(event)">
+                            <div class="form-group">
+                                <label for="newUserName">Full Name (Egyptian):</label>
+                                <input type="text" id="newUserName" required placeholder="e.g. Mohamed Ali">
+                            </div>
+                            <div class="form-group">
+                                <label for="newUserEmail">Email:</label>
+                                <input type="email" id="newUserEmail" required placeholder="example@email.com">
+                            </div>
+                            <div class="form-group">
+                                <label for="newUserPassword">Password:</label>
+                                <input type="password" id="newUserPassword" required placeholder="Choose password">
+                            </div>
+                            <div class="form-group">
+                                <label for="newUserRole">Role:</label>
+                                <select id="newUserRole" required>
+                                    <option value="">-- Select Role --</option>
+                                    <option value="admin">Admin</option>
+                                    <option value="serviceOfferor">Service Offeror</option>
+                                    <option value="courier">Courier</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Create Account</button>
+                        </form>
+                    </div>
+
+                    <!-- Product Management Form -->
+                    <div class="form-container">
+                        <h3>📦 Manage Products</h3>
+                        <form id="productForm" onsubmit="addProduct(event)">
+                            <div class="form-group">
+                                <label for="productName">Product Name:</label>
+                                <input type="text" id="productName" required placeholder="e.g. Margherita Pizza">
+                            </div>
+                            <div class="form-group">
+                                <label for="productPrice">Price (EGP):</label>
+                                <input type="number" id="productPrice" required min="0" step="0.01" placeholder="0.00">
+                            </div>
+                            <div class="form-group">
+                                <label for="productCategory">Category:</label>
+                                <select id="productCategory" required>
+                                    <option value="">Select category</option>
+                                    <option value="Pizza">🍕 Pizza</option>
+                                    <option value="Burgers">🍔 Burgers</option>
+                                    <option value="Drinks">🥤 Drinks</option>
+                                    <option value="Desserts">🍰 Desserts</option>
+                                    <option value="Other">📦 Other</option>
+                                </select>
+                            </div>
+                            <div class="form-buttons">
+                                <button type="submit" class="btn btn-primary">Add Product</button>
+                                <button type="button" onclick="updateProduct()" class="btn btn-secondary">Update
+                                    Selected</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Pending Products (Need Approval) -->
+                    <div class="pending-products-container">
+                        <h3>⏳ Products Pending Approval</h3>
+                        <p class="form-note">Products added by Service Offerors need your approval</p>
+                        <div id="pendingProductsList" class="admin-list">
+                            <!-- Pending products will appear here -->
+                        </div>
+                    </div>
+
+                    <!-- All Products -->
+                    <div class="admin-products">
+                        <h3>📦 All Products</h3>
+                        <div id="adminProductsList" class="admin-list">
+                            <!-- Admin product list will appear here -->
+                        </div>
+                    </div>
+
+                    <!-- ===== USER ACCOUNTS SECTION (Admin Only) ===== -->
+                    <!-- Shows all users with Edit button -->
+                    <div class="users-list-container" id="usersListContainer">
+                        <h3>👥 User Accounts</h3>
+                        <p class="form-note">View and edit all user accounts</p>
+                        <div id="usersTable" class="users-table">
+                            <!-- Users table will be displayed here -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========== SERVICE OFFEROR SECTION ========== -->
+            <!-- Service Offeror adds products (status = pending until admin approves) -->
+            <section id="serviceOfferorSection" class="role-section hidden">
+                <h2 class="section-title">🏪 Service Offeror Dashboard</h2>
+
+                <div class="service-panel">
+                    <!-- Form to add/manage products -->
+                    <div class="form-container">
+                        <h3>Add New Product</h3>
+                        <form id="serviceProductForm" onsubmit="addServiceProduct(event)">
+                            <div class="form-group">
+                                <label for="serviceProductName">Product Name:</label>
+                                <input type="text" id="serviceProductName" required placeholder="e.g. Beef Burger">
+                            </div>
+                            <div class="form-group">
+                                <label for="serviceProductPrice">Price (EGP):</label>
+                                <input type="number" id="serviceProductPrice" required min="0" step="0.01"
+                                    placeholder="0.00">
+                            </div>
+                            <div class="form-group">
+                                <label for="serviceProductCategory">Category:</label>
+                                <select id="serviceProductCategory" required>
+                                    <option value="">Select category</option>
+                                    <option value="Pizza">🍕 Pizza</option>
+                                    <option value="Burgers">🍔 Burgers</option>
+                                    <option value="Drinks">🥤 Drinks</option>
+                                    <option value="Desserts">🍰 Desserts</option>
+                                    <option value="Other">📦 Other</option>
+                                </select>
+                            </div>
+                            <div class="form-buttons">
+                                <button type="submit" class="btn btn-primary">Add Product</button>
+                                <button type="button" onclick="updateServiceProduct()" class="btn btn-secondary">Update
+                                    Selected</button>
+                            </div>
+                        </form>
+                        <p class="form-note">⚠️ Note: New products need Admin approval before customers can see them</p>
+                    </div>
+
+                    <!-- Products owned by this service offeror -->
+                    <div class="service-products">
+                        <h3>My Products</h3>
+                        <div id="serviceProductsList" class="admin-list">
+                            <!-- Service offeror's products will appear here -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========== COURIER SECTION ========== -->
+            <!-- Courier: View orders, update status, update delivery area -->
+            <section id="courierSection" class="role-section hidden">
+                <h2 class="section-title">🚚 Courier Dashboard</h2>
+
+                <div class="courier-panel">
+                    <!-- Courier's delivery area settings -->
+                    <div class="courier-settings">
+                        <h3>Delivery Settings</h3>
+                        <div class="form-group">
+                            <label for="deliveryArea">Delivery Area:</label>
+                            <input type="text" id="deliveryArea" placeholder="e.g. Maadi, Heliopolis">
+                            <button onclick="updateDeliveryArea()" class="btn btn-secondary">Update Area</button>
+                        </div>
+                        <p class="current-area">Current Area: <span id="currentArea">Downtown Cairo</span></p>
+                    </div>
+
+                    <!-- Orders assigned to this courier -->
+                    <div class="assigned-orders">
+                        <h3>📋 Assigned Orders</h3>
+                        <div id="courierOrders" class="orders-list">
+                            <p class="no-orders">No assigned orders</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- ==================== FOOTER ==================== -->
+        <footer class="footer">
+            <div class="footer-content">
+                <p>QuickDeliver © 2025 - Online Ordering System - Egypt</p>
+                <!-- Admin link to user accounts - Only visible for admin -->
+                <a href="#" id="userAccountsLink" class="footer-link hidden" onclick="scrollToUsers()">👥 User
+                    Accounts</a>
+            </div>
+        </footer>
+    </div>
+
+    <!-- ==================== NOTIFICATION TOAST ==================== -->
+    <div id="toast" class="toast hidden">
+        <span id="toastMessage">Message</span>
+    </div>
+
+    <!-- Link to our JavaScript file -->
+    <script src="../static/script.js"></script>
+</body>
+
+</html>

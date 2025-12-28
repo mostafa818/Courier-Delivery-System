@@ -288,7 +288,10 @@ class Product(db.Model):
             "id": self.id,
             "name": self.name,
             "details": self.details,
-            "price": self.price
+            "price": self.price,
+            "category": self.category,
+            "status": self.status,
+            "provider_id": self.provider_id
         }
 
     def update_product(self, name, price, details):

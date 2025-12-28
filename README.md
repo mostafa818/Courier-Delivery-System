@@ -1,52 +1,64 @@
-# Flask Courier Delivery System Backend
+# QuickDeliver 🚀
+> A modern, API-driven delivery application.
 
-This project is a robust Flask-based backend for a **Courier Delivery System**. It manages the logistics of orders, courier assignments, and delivery tracking using specific user roles and complex model relationships.
+QuickDeliver is a Flask-based full-stack web application that facilitates seamless order processing between Customers, Service Offerors (Restaurants/Shops), Couriers, and Admins.
 
-## 🚀 Key Features
+## 🛠️ Tech Stack
+- **Backend**: Python, Flask, Flask-SQLAlchemy, SQLite
+- **Frontend**: Vanilla JavaScript (ES6+), HTML5, CSS3
+- **Architecture**: REST API with role-based access control (RBAC)
 
-*   **Delivery Logistics**: Core focus on Order lifecycle from placement to delivery.
-*   **Courier Management**: Dedicated `Courier` role with area management and order assignment capabilities.
-*   **Customer & Merchant Portals**: Distinct roles for Customers (Receivers) and Merchants (Service Offerors) to manage orders and items.
-*   **Dispatch System**: Orders are tracked via status updates and assigned to couriers based on logistics logic.
-*   **Cart & Orders**: Flexible system for grouping items into delivery orders.
+## ✨ Key Features
+- **Frontend-Backend Integration**: Full separation of concerns; the frontend communicates exclusively via REST API endpoints.
+- **Multi-Role System**:
+  - **Customers**: Browse products, manage cart, place orders, and track status.
+  - **Service Offerors**: Manage products (Create, Update, Delete).
+  - **Couriers**: Set delivery areas and manage assigned orders.
+  - **Admins**: Approve products, manage users, and oversee platform activity.
+- **Robust Verification**: Automated end-to-end testing script (`verify_full_workflow.py`) validates critical user flows.
 
-## 🛠️ Architecture & Tech Stack
+## 🚀 Getting Started
 
-*   **Flask & Blueprints**: Modular application structure.
-*   **SQLAlchemy ORM**: Complex data modeling inheritance:
-    *   **User Hierarchy**: Base `User` class extended by `Courier`, `Customer`, `Admin`, and `ServiceOfferor` (Merchant).
-    *   **Relationships**: Many-to-Many associations for `Cart` items and `Order` contents.
-*   **Database**: SQLite (default) for easy deployment and testing.
+### Prerequisites
+- Python 3.8+
+- pip
 
-## 📂 Project Structure
-
-*   `app.py`: **Application Factory** entry point.
-*   `models.py`: Defines the logistics schema.
-    *   `Courier`: Handles status, salary, and service area.
-    *   `Order`: Tracks pickup/delivery addresses, weights, and courier assignment.
-    *   `ServiceOfferor`: Represents merchants or senders providing the items.
-*   `routes.py`: RESTful API endpoints for managing the delivery flow.
-*   `extensions.py`: Shared extensions.
-*   `verify_backend.py`: Integration testing script.
-
-## 🔧 Setup & Running
-
-1.  **Clone the repository**
-2.  **Install dependencies**
+### Installation
+1.  Clone the repository and navigate to the project directory.
+2.  Install dependencies:
     ```bash
-    pip install flask flask-sqlalchemy
+    pip install flask flask-sqlalchemy flask-cors requests
     ```
-3.  **Run Integration Tests**
-    Initializes the system and verifies the delivery flow:
-    ```bash
-    python verify_backend.py
-    ```
-4.  **Start the Server**
-    ```bash
-    python app.py
-    ```
-    API accessible at `http://localhost:5000/api`.
 
-## 🛡️ Security Note
+### Database Setup
+Initialize and seed the database with test data:
+```bash
+python seed_database.py
+```
+*Note: This script clears any existing data and repopulates tables with default users and products.*
 
-The application defaults to `debug=True` for development ease. **Disable this in production** to prevent Remote Code Execution (RCE) vulnerabilities.
+### Running the Application
+Start the Flask development server:
+```bash
+python app.py
+```
+Access the application at: `http://127.0.0.1:5000`
+
+## 🧪 Testing
+Run the full verification suite to test all API workflows:
+```bash
+python verify_full_workflow.py
+```
+
+## 🔐 Default Credentials
+Use these accounts to test different roles:
+
+| Role | Email | Password |
+|------|-------|----------|
+| **Admin** | `admin@email.com` | `admin123` |
+| **Customer** | `ahmed@email.com` | `123456` |
+| **Service Provider** | `pizza@email.com` | `pizza123` |
+| **Courier** | `nour@email.com` | `nour123` |
+
+---
+*Built with ❤️ by the QuickDeliver Team*
