@@ -1,5 +1,5 @@
 /* ==================== CONFIGURATION ==================== */
-const API_BASE_URL = 'http://127.0.0.1:5000/api';
+const API_BASE_URL = '/api';
 
 /* ==================== GLOBAL STATE ==================== */
 // We now rely on the backend for data, but we keep some UI state here
